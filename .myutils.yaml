@@ -1,0 +1,5 @@
+database:
+  config: "/tmp/my.cnf1"
+  report_dir: "/tmp/mysqlreport.sql1"
+  # mysql:/tmp/mysqlreport.sql1, oracle:@oraclereport_html_auto.sql
+  work_dir: "/tmp/database1"
