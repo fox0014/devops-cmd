@@ -16,17 +16,10 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-)
-
-var (
-	Author    string
-	GoVersion string
 )
 
 // databasesCmd represents the databases command
@@ -37,35 +30,32 @@ var databasesCmd = &cobra.Command{
 	// not support databasesCmd.Flags().StringP
 	//	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Author: %s\n", Author)
-		fmt.Printf("GoVersion: %s\n", GoVersion)
 		parameter, _ := cmd.Flags().GetString("database_tpye")
-		Info.Printf("%s go", parameter)
-		if parameter == "mysql" {
-			config_dir, report_dir, work_dir := GetDbConfig()
-			format_config_dir := strings.Replace("--defaults-file=/tmp/my.cnf", "/tmp/my.cnf", config_dir, 1)
-			format_report_dir := strings.Replace("source /tmp/mysqlreport.sql", "/tmp/mysqlreport.sql", report_dir, 1)
-			output, err := ExecuteCommand(work_dir, "mysql", format_config_dir, "-e", format_report_dir)
-
-			if err != nil {
-				Error.Printf("execute %s args:%v error:%v\n", cmd.Name(), args, err)
-				ExecuteError(cmd, args, err)
-
-			}
-			fmt.Fprint(os.Stdout, output)
-
-		} else if parameter == "oracle" {
-			_, report_dir, work_dir := GetDbConfig()
-			output, err := ExecuteCommand(work_dir, "sqlplus", "/ as sysdba", report_dir)
-
-			if err != nil {
-				ExecuteError(cmd, args, err)
-			}
-			fmt.Fprint(os.Stdout, output)
-		} else {
-			Error.Println("not support")
-		}
+		DbExecuteCommand(parameter)
 	},
+}
+
+func DbExecuteCommand(parameter string) {
+	if parameter == "mysql" {
+		config_dir, report_dir, work_dir := GetDbConfig()
+		format_config_dir := strings.Replace("--defaults-file=/tmp/my.cnf", "/tmp/my.cnf", config_dir, 1)
+		format_report_dir := strings.Replace("source /tmp/mysqlreport.sql", "/tmp/mysqlreport.sql", report_dir, 1)
+		output, _ := ExecuteCommand(work_dir, "mysql", format_config_dir, "-e", format_report_dir)
+		//if err != nil {
+		//	Error.Printf("execute %s args:%v error: %v\n", cmd.Name(), args, err)
+		//	ExecuteError(cmd, args, err)
+
+		//}
+		Info.Printf(output)
+		//	fmt.Fprint(os.Stdout, output)
+
+	} else if parameter == "oracle" {
+		_, report_dir, work_dir := GetDbConfig()
+		output, _ := ExecuteCommand(work_dir, "sqlplus", "/ as sysdba", report_dir)
+		Info.Printf(output)
+	} else {
+		Error.Println("not support")
+	}
 }
 
 func init() {

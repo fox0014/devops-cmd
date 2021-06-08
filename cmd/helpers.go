@@ -11,12 +11,14 @@ import (
 
 func ExecuteCommand(dir string, name string, subname string, args ...string) (string, error) {
 	args = append([]string{subname}, args...)
-	fmt.Print(name, args)
+	Info.Printf("%s %s", name, args)
 	cmd := exec.Command(name, args...)
 	cmd.Dir = dir
 	bytes, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Printf("CombinedOutput failed with %s %s\n", string(bytes), err)
+		Error.Printf("CombinedOutput %s, failed with %s\n", string(bytes), err)
+		os.Exit(1)
+		//	fmt.Printf("CombinedOutput %s, failed with %s\n", string(bytes), err)
 	}
 
 	return string(bytes), err
