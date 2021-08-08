@@ -16,7 +16,7 @@ limitations under the License.
 package main
 
 import (
-	"myutils/cmd"
+	"github.com/fox0014/devops-cmd/cmd"
 )
 
 func main() {
